@@ -75,9 +75,11 @@ steps:
   - step: "^I list open tasks$"
     methodName: i_list_open_tasks
 
-  - step: '^I add a task titled "([^"]*)"$'
+  - step: '^I( try to)? add a task titled "([^"]*)"$'
     methodName: i_add_a_task_titled
     arguments:
+      - name: tryTo
+        type: ignore
       - name: title
         type: string
 
@@ -88,13 +90,7 @@ steps:
         type: string
       - name: priority
         type: Priority
-
-  - step: '^I try to add a task titled "([^"]*)"$'
-    methodName: i_try_to_add_a_task_titled
-    arguments:
-      - name: title
-        type: string
-
+        
   - step: '^the operation should fail with "([^"]*)"$'
     methodName: the_operation_should_fail_with
     arguments:

@@ -17,8 +17,9 @@ namespace nTestTaskTracker
     {
         std::vector<Task> allTasks;
         std::vector<Task> currentTaskList;
+        std::string lastErrorMessage;
 
-        void assert_exact_tasks(const std::vector<ListingAssertionByTitle> & expectedTitles)
+        void assert_exact_tasks(const std::vector<ListingAssertionByTitle> &expectedTitles)
         {
             ASSERT_EQ(currentTaskList.size(), expectedTitles.size());
             for (size_t i = 0; i < currentTaskList.size(); ++i)
@@ -80,13 +81,9 @@ namespace nTestTaskTracker
             }
             FAIL() << "Task not found: " << task;
         }
-        void i_try_to_add_a_task_titled(const std::string &title)
-        {
-            // TODO
-        }
         void the_operation_should_fail_with(const std::string &errorMessage)
         {
-            // TODO ???
+            ASSERT_EQ(lastErrorMessage, errorMessage);
         }
         void assert_tasks_with_state(long count, TaskState state)
         {
@@ -103,6 +100,28 @@ namespace nTestTaskTracker
         void the_tasks_should_be_ordered_as(const std::vector<ListingAssertionByTitle> &rows)
         {
             assert_exact_tasks(rows);
+        }
+        void around_step(const StepContext &context, const std::function<void()> &step)
+        {
+            ITestTaskTracker::around_step(context,
+                                          [&]()
+                                          {
+                lastErrorMessage = "";
+                try
+                {
+                    step();
+                }
+                catch (const std::exception &e)
+                {
+                    if (context.next() && context.next().value().method == StepMethod::the_operation_should_fail_with)
+                    {
+                        lastErrorMessage = e.what();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                } });
         }
     };
 } // namespace nTestTaskTracker
