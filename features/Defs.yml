@@ -25,6 +25,12 @@ types:
       - medium
       - high
 
+  - name: TaskState
+    kind: enum
+    cases:
+      - open
+      - done
+
 steps:
   - step: "^an empty task tracker$"
     methodName: an_empty_task_tracker
@@ -75,12 +81,6 @@ steps:
       - name: title
         type: string
 
-  - step: '^the tracker should have (-?\d+) open task$'
-    methodName: the_tracker_should_have_open_task
-    arguments:
-      - name: count
-        type: int
-
   - step: '^the task "([^"]*)" should have priority "([^"]*)"$'
     methodName: the_task_should_have_priority
     arguments:
@@ -101,19 +101,13 @@ steps:
       - name: errorMessage
         type: string
 
-  - step: '^the tracker should have (-?\d+) open task(s)?$'
-    methodName: the_tracker_should_have_open_tasks
+  - step: '^the tracker should have (-?\d+) (open|done) task(s)?$'
+    methodName: assert_tasks_with_state
     arguments:
       - name: count
         type: int
-      - name: plural
-        type: ignore
-
-  - step: '^the tracker should have (-?\d+) done task(s)?$'
-    methodName: the_tracker_should_have_done_tasks
-    arguments:
-      - name: count
-        type: int
+      - name: state
+        type: TaskState
       - name: plural
         type: ignore
 
