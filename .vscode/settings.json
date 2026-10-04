@@ -1,0 +1,14 @@
+{
+    "yaml.schemas": {
+        "./build/_deps/zucchini-src/schemas/schema.json": [
+            "/features/Defs.yml"
+        ]
+    },
+    "cucumberautocomplete.steps": [
+        "features/Defs.yml"
+    ],
+    "cucumberautocomplete.syncfeatures": "**/*.feature",
+    "cucumberautocomplete.gherkinDefinitionPart": "(step)",
+    "cucumberautocomplete.strictGherkinCompletion": false,
+    "cucumberautocomplete.strictGherkinValidation": false
+}
