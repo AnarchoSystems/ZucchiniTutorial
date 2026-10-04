@@ -42,5 +42,5 @@ Feature: Task tracking
       | Title         |
       | Write report  |
       | Buy groceries |
-    When I remove the task "Write repor"
+    When I remove the task "Write report"
     Then the tracker should have 1 open task
