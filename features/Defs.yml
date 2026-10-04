@@ -1,1 +1,99 @@
-steps: []
+types:
+  - name: IHaveAddedTheFollowingTasksRow
+    kind: struct
+    fields:
+      - name: title
+        header: "Title"
+      - name: priority
+        header: "Priority"
+        optional: true
+      - name: tag
+        header: "Tag"
+        optional: true
+  - name: TheListedTasksShouldBeExactlyRow
+    kind: struct
+    fields:
+      - name: title
+        header: "Title"
+  - name: TheTasksShouldBeOrderedAsRow
+    kind: struct
+    fields:
+      - name: title
+        header: "Title"
+
+steps:
+  - step: "^an empty task tracker$"
+    methodName: an_empty_task_tracker
+  - step: "^I have added the following tasks:$"
+    methodName: i_have_added_the_following_tasks
+    dataTable:
+      type: IHaveAddedTheFollowingTasksRow
+  - step: '^I list open tasks with tag "([^"]*)"$'
+    methodName: i_list_open_tasks_with_tag
+    arguments:
+      - name: arg1
+        type: string
+  - step: "^the listed tasks should be exactly:$"
+    methodName: the_listed_tasks_should_be_exactly
+    dataTable:
+      type: TheListedTasksShouldBeExactlyRow
+  - step: '^I list open tasks with priority "([^"]*)"$'
+    methodName: i_list_open_tasks_with_priority
+    arguments:
+      - name: arg1
+        type: string
+  - step: '^I complete the task "([^"]*)"$'
+    methodName: i_complete_the_task
+    arguments:
+      - name: arg1
+        type: string
+  - step: "^I list done tasks$"
+    methodName: i_list_done_tasks
+  - step: '^I remove the task "([^"]*)"$'
+    methodName: i_remove_the_task
+    arguments:
+      - name: arg1
+        type: string
+  - step: "^I list open tasks$"
+    methodName: i_list_open_tasks
+  - step: '^I add a task titled "([^"]*)"$'
+    methodName: i_add_a_task_titled
+    arguments:
+      - name: arg1
+        type: string
+  - step: '^the tracker should have (-?\d+) open task$'
+    methodName: the_tracker_should_have_open_task
+    arguments:
+      - name: arg1
+        type: int
+  - step: '^the task "([^"]*)" should have priority "([^"]*)"$'
+    methodName: the_task_should_have_priority
+    arguments:
+      - name: arg1
+        type: string
+      - name: arg2
+        type: string
+  - step: '^I try to add a task titled "([^"]*)"$'
+    methodName: i_try_to_add_a_task_titled
+    arguments:
+      - name: arg1
+        type: string
+  - step: '^the operation should fail with "([^"]*)"$'
+    methodName: the_operation_should_fail_with
+    arguments:
+      - name: arg1
+        type: string
+  - step: '^the tracker should have (-?\d+) open tasks$'
+    methodName: the_tracker_should_have_open_tasks
+    arguments:
+      - name: arg1
+        type: int
+  - step: '^the tracker should have (-?\d+) done task$'
+    methodName: the_tracker_should_have_done_task
+    arguments:
+      - name: arg1
+        type: int
+  - step: "^the tasks should be ordered as:$"
+    methodName: the_tasks_should_be_ordered_as
+    dataTable:
+      type: TheTasksShouldBeOrderedAsRow
