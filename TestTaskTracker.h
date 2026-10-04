@@ -253,7 +253,7 @@ namespace nTestTaskTracker
                 }
                 catch (const std::exception &e)
                 {
-                    if (context.next() && context.next().value().method == StepMethod::the_operation_should_fail_with)
+                    if (context.next() && context.next()->method == StepMethod::the_operation_should_fail_with)
                     {
                         lastErrorMessage = e.what();
                     }
