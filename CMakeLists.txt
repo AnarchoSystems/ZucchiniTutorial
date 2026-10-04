@@ -25,6 +25,8 @@ enable_testing()
 
 add_executable(ZucchiniTutorial main.cpp)
 
+target_compile_options(ZucchiniTutorial PRIVATE -Wswitch-enum)
+
 target_include_directories(ZucchiniTutorial PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 zucchinify(ZucchiniTutorial

@@ -263,5 +263,94 @@ namespace nTestTaskTracker
                     }
                 } });
         }
+
+    private:
+        struct TaskRefValidation
+        {
+            std::set<std::string> existingTasks;
+            void validateStep(const StepContext &context,
+                              nZucchini::Diagnostics &errors)
+            {
+                if (context.tags(context.current().step).contains(StepTag::AddsTasks))
+                {
+                    switch (context.cast<StepTag::AddsTasks>(context.current().method))
+                    {
+                    case AddsTasksSteps::i_have_added_the_following_tasks:
+                    {
+                        for (auto &task : context.getArgs<StepMethod::i_have_added_the_following_tasks>(context.current().step).rows)
+                        {
+                            existingTasks.insert(task.title);
+                        }
+                        break;
+                    }
+                    case AddsTasksSteps::i_add_a_task_titled:
+                    {
+                        existingTasks.insert(context.getArgs<StepMethod::i_add_a_task_titled>(context.current().step).title);
+                        break;
+                    }
+                    }
+                }
+                if (context.tags(context.current().step).contains(StepTag::ReferencesTasksByTitle))
+                {
+                    if (context.next() && context.tags(context.next()->step).contains(StepTag::AssertsFailure))
+                    {
+                        // may be fine!
+                        return;
+                    }
+                    std::vector<std::string> referencedTasks;
+                    switch (context.cast<StepTag::ReferencesTasksByTitle>(context.current().method))
+                    {
+                    case ReferencesTasksByTitleSteps::i_complete_the_task:
+                    {
+                        referencedTasks.push_back(context.getArgs<StepMethod::i_complete_the_task>(context.current().step).task);
+                        break;
+                    }
+                    case ReferencesTasksByTitleSteps::i_remove_the_task:
+                    {
+                        referencedTasks.push_back(context.getArgs<StepMethod::i_remove_the_task>(context.current().step).task);
+                        break;
+                    }
+                    }
+                    for (const auto &task : referencedTasks)
+                    {
+                        if (existingTasks.count(task))
+                        {
+                            continue;
+                        }
+                        // logic error!
+                        nZucchini::add_diagnostic(errors,
+                                                  context.zucchini.uri,
+                                                  "Referenced task '" + task + "' does not exist.",
+                                                  context.current().step.line,
+                                                  context.current().step.column,
+                                                  nZucchini::DiagnosticSeverity::Error);
+                    }
+                }
+                if (context.tags(context.current().step).contains(StepTag::RemovesTasks))
+                {
+                    switch (context.cast<StepTag::RemovesTasks>(context.current().method))
+                    {
+                    case RemovesTasksSteps::i_remove_the_task:
+                    {
+                        existingTasks.erase(context.getArgs<StepMethod::i_remove_the_task>(context.current().step).task);
+                        break;
+                    }
+                    }
+                }
+            }
+        };
+
+    public:
+        void validate_scenario(const ScenarioContext &context,
+                               nZucchini::Diagnostics &errors)
+        {
+            TaskRefValidation taskRefValidation;
+            for (size_t i = 0; i < context.zucchini.steps.size(); i++)
+            {
+                StepContext StepContext(context.zucchini, i);
+                taskRefValidation.validateStep(StepContext, errors);
+                // further validations...
+            }
+        }
     };
 } // namespace nTestTaskTracker
