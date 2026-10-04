@@ -36,3 +36,11 @@ Feature: Task tracking
       | High   |
       | Medium |
       | Low    |
+
+  Scenario: Removing a task
+    And I have added the following tasks:
+      | Title         |
+      | Write report  |
+      | Buy groceries |
+    When I remove the task "Write repor"
+    Then the tracker should have 1 open task
